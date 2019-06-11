@@ -1,0 +1,73 @@
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/iview/dist/styles/iview.css">
+
+<script src="https://vuejs.org/js/vue.min.js"></script>
+<script src="https://unpkg.com/iview/dist/iview.min.js"></script>
+
+<div id="app">
+    <Row>
+        <i-col span="4"><span><Icon type="ios-color-wand" size="24"/></span><span style="font-family: Helvetica Neue;font-size: large">Listen All Tab:</span>
+            <i-switch v-model="switch1" @on-change="change">
+
+            </i-switch>
+        </i-col>
+        <i-col span="4"><span><Icon type="ios-color-wand-outline" size="24"/></span><span style="font-family: Helvetica Neue;font-size: large">Listen Current Tab:</span>
+            <i-switch v-model="switch2" @on-change="change2">
+            </i-switch>
+        </i-col>
+        <i-col span="4" offset="12">
+            <i-button type="error" @click="clearData" style="float:right">clear all data</i-button>
+        </i-col>
+    </Row>
+    <i-table height="1000" :columns="columns1" :data="data1"></i-table>
+
+
+    <Modal
+            v-model="modal1"
+            title="Details"
+            @on-ok="ok"
+            @on-cancel="cancel"
+            ok-text="send"
+            cancel-text="cancel"
+    >
+        <i-select v-model="http_method" style="width:100px">
+            <i-option v-for="item in methodList" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+        </i-select>
+        <span><i-input v-model="url" placeholder="Enter something..." style="width: 100%"/></span>
+        <Divider>headers</Divider>
+
+        <i-button v-on:click="add1" type="primary">Add header</i-button>
+        <ol style="list-style-type:none">
+            <li v-for="header in headers">
+                <span><i-input  v-model="header.name" placeholder="Enter something..." style="width: 20%"/></span> :
+                <span><i-input  v-model="header.value" :autosize="true" type="textarea" placeholder="Enter something..."
+                               style="width: 70%"/></span>
+            </li>
+        </ol>
+        <ol style="list-style-type:none">
+            <li v-for="header in headers_new">
+                <span><i-input v-model="header.name" placeholder="Enter something..." style="width: 20%"/></span> :
+                <span><i-input v-model="header.value" :autosize="true" type="textarea" placeholder="Enter something..."
+                               style="width: 70%"/></span>
+            </li>
+        </ol>
+        <div v-if="http_method==='POST'">
+            <Divider>Body</Divider>
+            <i-button v-on:click="addbody" type="primary">Add Body</i-button>
+            <ol style="list-style-type:none">
+                <li v-for="body in bodys">
+                    <span><i-input v-model="body.name" placeholder="Enter something..." style="width: 20%"/></span> :
+                    <span><i-input v-model="body.value" placeholder="Enter something..." style="width: 70%"/></span>
+                </li>
+            </ol>
+            <ol style="list-style-type:none">
+                <li v-for="body in bodys_new">
+                    <span><i-input v-model="body.name" placeholder="Enter something..." style="width: 20%"/></span> :
+                    <span><i-input v-model="body.value" placeholder="Enter something..." style="width: 70%"/></span>
+                </li>
+            </ol>
+        </div>
+
+    </Modal>
+</div>
+
+<script src="../js/myvue.js"></script>
