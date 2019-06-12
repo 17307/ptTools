@@ -10,7 +10,7 @@ var callback_beforeRequest = function (details) {
 
     return {cancel: false} //为true是取消发送
 };
-// 监听哪些内容
+// 监听哪些URL
 const filter = {urls: ["<all_urls>"]};
 // 额外的信息规范，可选的
 /* 监听response headers接收事件*/
@@ -32,9 +32,7 @@ var callback_onsendheaders = function (details) {
     html_tmp['url'] = details.url;
     html_tmp['method'] = details.method;
     html_tmp['type'] = details.type;
-    chrome.runtime.sendMessage({greeting: html_tmp}, function (response) {
-
-    });
+    chrome.runtime.sendMessage({greeting: html_tmp}, function (response) {});
 };
 //onSendHeaders，请求头发送之前触发（请求的第3个事件，此时只能查看请求信息，可以确认onBeforeSendHeaders事件中都修改了哪些请求头）。
 const extraInfoSpec3 = ["extraHeaders", "requestHeaders"];
@@ -45,8 +43,11 @@ var FLAG_LISTEN = false;
 function rewriteHeaders(details) {
     // console.log('rewrite');
     // console.log(details);
+    // console.log(url);
 
-    // if (details.url === url) {
+    //只判断域名，忽略https与http。防止来回跳转。
+    //if判断 当前访问的与要修改的url是否相同，防止修改了其他的url。
+    if (details.url.split('://')[1] === url.split('://')[1]) {
         details.requestHeaders = [];
         headers_all.forEach(function (header) {
             if(header.name!==""){
@@ -56,16 +57,20 @@ function rewriteHeaders(details) {
         if(details.method==="POST"){
             details.requestHeaders.push({'name':'Content-Type','value':'application/x-www-form-urlencoded'})
         }
+        // details = [];
         return {requestHeaders: details.requestHeaders};
-    // }
+    }
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, callback) {
     // console.log(message);
     //收到myvue.js的post()函数
+    // console.log(sender.url);
     if (sender.url !== chrome.runtime.getURL("/html/pt_dev.html")) {
+        // chrome.webRequest.onBeforeSendHeaders.removeListener(rewriteHeaders);
         return;
     }
+
     if (message.send_message) {
 
         url = message.send_message.url;
