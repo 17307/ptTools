@@ -12,6 +12,8 @@ HTTP请求记录又2种模式，一种为记录全部标签页的请求，另一
 
 - 在进行POST的时候，将以`application/x-www-form-urlencoded`的类型添加参数。
 - 如无特殊需求，请自行删除`content-length`的内容。
+- 重放某些攻击不生效可能原因是请求了缓存，通常对于图片会发生这种情况。可以勾选`Network`选项卡种的`Disable cache`
+
 
 ## TO-DO
 

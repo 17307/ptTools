@@ -43,9 +43,10 @@ var FLAG_LISTEN = false;
 
 //用于重新构造发包的请求头
 function rewriteHeaders(details) {
-    console.log(details);
+    // console.log('rewrite');
+    // console.log(details);
 
-    if (details.url === url) {
+    // if (details.url === url) {
         details.requestHeaders = [];
         headers_all.forEach(function (header) {
             if(header.name!==""){
@@ -56,12 +57,15 @@ function rewriteHeaders(details) {
             details.requestHeaders.push({'name':'Content-Type','value':'application/x-www-form-urlencoded'})
         }
         return {requestHeaders: details.requestHeaders};
-    }
+    // }
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, callback) {
     // console.log(message);
     //收到myvue.js的post()函数
+    if (sender.url !== chrome.runtime.getURL("/html/pt_dev.html")) {
+        return;
+    }
     if (message.send_message) {
 
         url = message.send_message.url;
