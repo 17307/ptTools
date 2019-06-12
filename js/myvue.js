@@ -32,6 +32,7 @@ app = new Vue({
             {
                 title: 'Methods',
                 key: 'methods',
+                width: 200,
                 filters: [
                     {
                         label: 'GET',
@@ -54,6 +55,7 @@ app = new Vue({
             {
                 title: 'Type',
                 key: 'type',
+                width: 200,
                 filters: [
                     {
                         label: 'js',
@@ -93,7 +95,7 @@ app = new Vue({
             {
                 title: 'Action',
                 key: 'action',
-                width: 150,
+                width: 200,
                 align: 'center',
                 render: (h, params) => {
                     return h('div', [
@@ -111,6 +113,20 @@ app = new Vue({
                                 }
                             }
                         }, 'View'),
+                        // h('Button', {
+                        //     props: {
+                        //         type: 'primary',
+                        //         size: 'small'
+                        //     },
+                        //     style: {
+                        //         marginRight: '5px'
+                        //     },
+                        //     on: {
+                        //         click: () => {
+                        //             app.showResponse(params.index)
+                        //         }
+                        //     }
+                        // }, 'Look'),
                         h('Button', {
                             props: {
                                 type: 'error',
@@ -210,6 +226,9 @@ app = new Vue({
         },
         remove(index) {
             this.data1.splice(index, 1);
+        },
+        showResponse: function (index) {
+            alert(index)
         }
     }
 });
@@ -221,7 +240,7 @@ function currentTabListentCallback(request) {
     let tmp_body = [];
     console.log(tmp.postData);
     if (tmp.postData) {
-        let tmp_body_1 = tmp.postData.text
+        let tmp_body_1 = tmp.postData.text;
         let temp_body_list = tmp_body_1.split('&');
         temp_body_list.forEach(function (t) {
             n_v = t.split('=');
