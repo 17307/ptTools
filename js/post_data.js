@@ -1,4 +1,4 @@
-console.log(decodeURIComponent(post_data));
+// console.log(decodeURIComponent(post_data));
 var fields = JSON.parse(decodeURIComponent(post_data));
 var form = document.createElement("form");
 form.setAttribute("method", "post");
