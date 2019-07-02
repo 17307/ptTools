@@ -1,4 +1,5 @@
 ## 工具介绍
+
 一款用于chrome下的HTTP包重放工具
 HTTP请求记录又2种模式，一种为记录全部标签页的请求，另一种为记录当前`devtool`所在标签页的请求。
 
@@ -20,12 +21,25 @@ HTTP请求记录又2种模式，一种为记录全部标签页的请求，另一
 - 添加更多的POST的请求type。[优先]
 - 完善未知bug。[优先]
 - 修改HTTP请求后，无法保留原始请求。(对vue不熟悉,还没有找到解决办法)
-- 此插件将保持更新与完善。
 - current tab增加response预览功能。
+- 等我学会前端，我就把它做的更酷炫。
+- 此插件将保持更新与完善。
 
 ## 简单介绍
 
 ![](https://ws1.sinaimg.cn/large/007BTj79gy1g3xk7up846j30v90ik75q.jpg)
 
 大体的流程如上。
+
+
+
+## 已知问题
+
+我在尝试修改请求头后，发现浏览器中出现了 **Provisional headers are shown** ，并且没有显示我修改的请求头，但是通过burp抓包已经存在该请求头。目前还没找到原因。
+
+![](https://o1hy-1253938230.cos.ap-beijing.myqcloud.com/o1hy/b2c671826bccf-Snipaste_2019-07-02_10-39-57.png)
+
+![](https://o1hy-1253938230.cos.ap-beijing.myqcloud.com/o1hy/3f4632d31f10b-Snipaste_2019-07-02_10-40-19.png)
+
+![](https://o1hy-1253938230.cos.ap-beijing.myqcloud.com/o1hy/a8eeca4add9fa-Snipaste_2019-07-02_10-40-35.png)
 
