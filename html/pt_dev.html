@@ -1,28 +1,23 @@
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/iview/dist/styles/iview.css">
-
-<script src="/js/vue.min.js"></script>
-<script src="/js/iview.min.js"></script>
+<script src="/js/lib/qs.min.js"></script>
+<script src="/js/lib/vue.min.js"></script>
+<script src="/js/lib/iview.min.js"></script>
 <meta charset="UTF-8">
 <div id="app">
     <Row>
-        <i-col span="4"><span><Icon type="ios-color-wand" size="24"/></span><span style="font-family: Helvetica Neue;font-size: large">Listen All Tab:</span>
-            <i-switch v-model="switch1" @on-change="change">
-
-            </i-switch>
-        </i-col>
         <i-col span="4"><span><Icon type="ios-color-wand-outline" size="24"/></span><span style="font-family: Helvetica Neue;font-size: large">Listen Current Tab:</span>
-            <i-switch v-model="switch2" @on-change="change2">
+            <i-switch v-model="listenFlag" @on-change="changeListenFlag">
             </i-switch>
         </i-col>
-        <i-col span="4" offset="12">
+        <i-col span="4" offset="16">
             <i-button type="error" @click="clearData" style="float:right">clear all data</i-button>
         </i-col>
     </Row>
-    <i-table height="1000" :columns="columns1" :data="data1"></i-table>
+    <i-table height="1000" :columns="tableColumns" :data="data1"></i-table>
 
 
     <Modal
-            v-model="modal1"
+            v-model="modalDetails"
             title="Details"
             @on-ok="ok"
             @on-cancel="cancel"
@@ -34,8 +29,7 @@
         </i-select>
         <span><i-input v-model="url" placeholder="Enter something..." style="width: 100%"/></span>
         <Divider>headers</Divider>
-
-        <i-button v-on:click="add1" type="primary">Add header</i-button>
+        <i-button v-on:click="addHeaders" type="primary">Add header</i-button>
         <ol style="list-style-type:none">
             <li v-for="header in headers">
                 <span><i-input  v-model="header.name" placeholder="Enter something..." style="width: 20%"/></span> :
@@ -43,31 +37,31 @@
                                style="width: 70%"/></span>
             </li>
         </ol>
-        <ol style="list-style-type:none">
-            <li v-for="header in headers_new">
-                <span><i-input v-model="header.name" placeholder="Enter something..." style="width: 20%"/></span> :
-                <span><i-input v-model="header.value" :autosize="true" type="textarea" placeholder="Enter something..."
-                               style="width: 70%"/></span>
-            </li>
-        </ol>
+
         <div v-if="http_method==='POST'">
             <Divider>Body</Divider>
-            <i-button v-on:click="addbody" type="primary">Add Body</i-button>
-            <ol style="list-style-type:none">
-                <li v-for="body in bodys">
-                    <span><i-input v-model="body.name" placeholder="Enter something..." style="width: 20%"/></span> :
-                    <span><i-input v-model="body.value" placeholder="Enter something..." style="width: 70%"/></span>
-                </li>
-            </ol>
-            <ol style="list-style-type:none">
-                <li v-for="body in bodys_new">
-                    <span><i-input v-model="body.name" placeholder="Enter something..." style="width: 20%"/></span> :
-                    <span><i-input v-model="body.value" placeholder="Enter something..." style="width: 70%"/></span>
-                </li>
-            </ol>
-        </div>
 
+            <Radio-group v-model="contentType">
+                <Radio label="form"></Radio>
+                <Radio label="json"></Radio>
+<!--                <Radio label="other"></Radio>-->
+            </Radio-group>
+            <div v-if="contentType==='json'"><i-input v-model="bodys" type="textarea" /></div>
+            <div v-else-if="contentType==='form'">
+                <i-button v-on:click="addbody" type="primary">Add Body</i-button>
+                <ol style="list-style-type:none">
+                    <li v-for="body in bodys_form">
+                        <span><i-input v-model="body.name" placeholder="Enter something..." style="width: 20%"/></span> :
+                        <span><i-input v-model="body.value" placeholder="Enter something..." style="width: 70%"/></span>
+                    </li>
+                </ol>
+            </div>
+            <div v-else>
+<!--                <i-input v-model="bodys" type="textarea" />-->
+            </div>
+        </div>
     </Modal>
+
 </div>
 
 <script src="../js/myvue.js"></script>

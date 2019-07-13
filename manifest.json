@@ -4,7 +4,7 @@
     "background": {
        "scripts": [ "background.js" ]
     },
-    "content_security_policy": "style-src 'self' 'unsafe-inline' https://unpkg.com;script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net https://vuejs.org https://unpkg.com;object-src 'self' ;",
+    "content_security_policy": "style-src 'self' 'unsafe-inline' https://unpkg.com;script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net https://vuejs.org https://unpkg.com https://code.jquery.com ;object-src 'self' ;",
     "description": "A tool about pt",
     "devtools_page": "pttools.html",
     "icons": {

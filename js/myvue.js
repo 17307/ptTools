@@ -1,14 +1,8 @@
 function post(flag) {
-    //用于发包的方法
-    console.log('post');
     //获取当前要做的内容
     let url = app.url;
     let headers = app.headers;
-    let headers_new = app.headers_new;
     let bodys = app.bodys;
-    let bodys_new = app.bodys_new;
-    let header_all = headers.concat(headers_new);
-    let bodys_all = bodys.concat(bodys_new);
     let methods_p = app.http_method;
     //获取打开devtool的窗口id
     tabid = chrome.devtools.inspectedWindow.tabId;
@@ -16,10 +10,12 @@ function post(flag) {
     chrome.runtime.sendMessage({
         send_message: {
             url: url,
-            bodys_all: bodys_all,
-            header_all: header_all,
+            bodys_all: bodys,
+            bodys_form: app.bodys_form,
+            header_all: headers,
             methods_p: methods_p,
-            tabid: tabid
+            tabid: tabid,
+            contentType: app.contentType
         },
         http_listen_flag: app.switch1
     }, function (response) {
@@ -31,7 +27,7 @@ function post(flag) {
 app = new Vue({
     el: '#app',
     data: {
-        columns1: [
+        tableColumns: [
             {
                 title: 'Methods', //请求方法
                 key: 'methods',
@@ -96,7 +92,7 @@ app = new Vue({
             {
                 title: 'Action',
                 key: 'action',
-                width: 200,
+                width: 250,
                 align: 'center',
                 render: (h, params) => {
                     return h('div', [
@@ -113,7 +109,7 @@ app = new Vue({
                                     app.show(params.index) //展示当前详细信息
                                 }
                             }
-                        }, 'View'),
+                        }, 'Edit'),
                         h('Button', {
                             props: {
                                 type: 'error',
@@ -136,16 +132,16 @@ app = new Vue({
                 url: 'https://blog.o1hy.com',
                 headers: '',
                 parameters: '',
-                type: 'main_frame'
+                type: 'main_frame',
+                content: ' '
             }
         ],
-        modal1: false, //模态框
+        modalDetails: false, //模态框
         value: '',
         url: 'blog.o1hy.com',
         headers: [],
-        headers_new: [],
-        bodys: [],
-        bodys_new: [],
+        bodys: [], //存放json或者other类型body
+        bodys_form:[], ////存放form类型body
         methodList: [
             {
                 value: 'POST',
@@ -157,14 +153,14 @@ app = new Vue({
             }
         ],
         http_method: 'GET',
-        switch1: false,
-        switch2: false
+        listenFlag: false,
+        contentType: 'form'
     },
     methods: {
         show: function (index) {
             //展示当前行详细内容
             headers = this.data1[index].headers;
-            app.modal1 = true;
+            app.modalDetails = true;
             if (headers && headers !== "") {
                 app.headers = headers;
             } else {
@@ -173,38 +169,36 @@ app = new Vue({
             app.http_method = this.data1[index].methods;
             app.url = this.data1[index].url;
             if (this.data1[index].parameters && this.data1[index].parameters !== "") {
+                app.bodys_form = [];
                 app.bodys = this.data1[index].parameters;
+                try{
+                    this.data1[index].parameters.split('&').forEach(function (p) {
+                        ps = p.split('=');
+                        app.bodys_form.push({name:ps[0],value:ps[1]});
+                    })
+                }catch (e) {
+                    console.log(e)
+                }
             } else {
                 app.bodys = [];
+                app.bodys_form = [];
             }
         },
-        add1: function () {
+        addHeaders: function () {
             //添加新的头部
             app.headers.push({name: '', value: ''})
         },
         addbody: function () {
             //添加新表单数据
-            app.bodys.push({name: '', value: ''})
+            app.bodys_form.push({name: '', value: ''})
         },
         cancel: function () {
-            app.headers_new = [];
-            app.bodys_new = [];
         },
         ok: function () {
             post();
         },
-        change: function (status) {
-            //监控tab
+        changeListenFlag: function (status) {
             if (status) {
-                app.switch2 = false;
-                stopListenCurrentTab();
-            }
-            chrome.runtime.sendMessage({http_listen_flag: status})
-        },
-        change2: function (status) {
-            if (status) {
-                app.switch1 = false;
-                chrome.runtime.sendMessage({http_listen_flag: app.switch1});
                 startListenCurrentTab()
             } else {
                 stopListenCurrentTab()
@@ -223,30 +217,24 @@ app = new Vue({
 function currentTabListentCallback(request) {
     //current tab监听模块
     let tmp = request.request;
-    let tmp_body = [];
-    if (tmp.postData) {
-        //获取post的body
-        let tmp_body_1 = tmp.postData.text;
-        let temp_body_list = tmp_body_1.split('&');
-        temp_body_list.forEach(function (t) {
-            n_v = t.split('=');
-            tmp_body.push({name: n_v[0], value: n_v[1]})
-        })
-    } else {
-        tmp_body = ''
-    }
-    // console.log(tmp_body);
-    // 将内容添加到表格种
-    console.log(tmp.url);
-    if(!tmp.url.startsWith('data:image')){
-        app.data1.push({
-            methods: tmp.method,
-            type: request._resourceType,
-            url: tmp.url,
-            headers: tmp.headers,
-            parameters: tmp_body
-        })
-    }
+
+        let tmp_body = '';
+        if (tmp.postData) {
+            //获取post的body
+            //修正了body的展示方法
+            tmp_body = tmp.postData.text;
+        }
+        // console.log(tmp_body);
+        // 将内容添加到表格种
+        if(!tmp.url.startsWith('data:image') && !tmp.url.startsWith('data:application')){
+            app.data1.push({
+                methods: tmp.method,
+                type: request._resourceType,
+                url: tmp.url,
+                headers: tmp.headers,
+                parameters: tmp_body
+            })
+        }
 
 }
 
@@ -295,5 +283,4 @@ chrome.runtime.onMessage.addListener(function (message, sender, callback) {
     } catch (e) {
         console.log(e)
     }
-
 });
